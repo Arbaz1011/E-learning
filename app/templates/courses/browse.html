@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Browse Courses</h1>
+    
+    <!-- Search Form -->
+    <form class="row g-3 mb-4">
+        <div class="col-md-8">
+            <input type="text" class="form-control" name="search" value="{{ search }}" placeholder="Search courses...">
+        </div>
+        <div class="col-md-4">
+            <button type="submit" class="btn btn-primary">Search</button>
+            {% if search %}
+                <a href="{{ url_for('courses.browse') }}" class="btn btn-secondary">Clear</a>
+            {% endif %}
+        </div>
+    </form>
+
+    <!-- Course Grid -->
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        {% for course in courses.items %}
+        <div class="col">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">{{ course.title }}</h5>
+                    <p class="card-text">{{ course.description[:150] }}{% if course.description|length > 150 %}...{% endif %}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-muted">By {{ course.instructor.username }}</span>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a href="{{ url_for('courses.view', course_id=course.id) }}" class="btn btn-primary w-100">View Course</a>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                No courses found{% if search %} matching "{{ search }}"{% endif %}.
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if courses.pages > 1 %}
+    <nav aria-label="Course pagination" class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% for page in range(1, courses.pages + 1) %}
+            <li class="page-item {% if page == courses.page %}active{% endif %}">
+                <a class="page-link" href="{{ url_for('courses.browse', page=page, search=search) }}">{{ page }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}

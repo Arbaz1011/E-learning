@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Manage Courses</h1>
+        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Instructor</th>
+                            <th>Status</th>
+                            <th>Enrollments</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for course in courses.items %}
+                        <tr>
+                            <td>
+                                <a href="{{ url_for('courses.view', course_id=course.id) }}" class="text-decoration-none">
+                                    {{ course.title }}
+                                </a>
+                            </td>
+                            <td>{{ course.instructor.username }}</td>
+                            <td>
+                                <span class="badge bg-{{ 'success' if course.is_published else 'warning' }}">
+                                    {{ 'Published' if course.is_published else 'Draft' }}
+                                </span>
+                            </td>
+                            <td>{{ course.enrollments|length }}</td>
+                            <td>{{ course.created_at.strftime('%Y-%m-%d') }}</td>
+                            <td>
+                                <div class="btn-group">
+                                    <a href="{{ url_for('courses.manage', course_id=course.id) }}" 
+                                       class="btn btn-sm btn-outline-primary">
+                                        Edit
+                                    </a>
+                                    <form action="{{ url_for('admin.toggle_course_status', course_id=course.id) }}" 
+                                          method="POST" class="d-inline">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <button type="submit" class="btn btn-sm btn-{{ 'warning' if course.is_published else 'success' }}">
+                                            {{ 'Unpublish' if course.is_published else 'Publish' }}
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            {% if courses.pages > 1 %}
+            <nav aria-label="Course pagination" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% for page in range(1, courses.pages + 1) %}
+                    <li class="page-item {% if page == courses.page %}active{% endif %}">
+                        <a class="page-link" href="{{ url_for('admin.courses', page=page) }}">{{ page }}</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Statistics -->
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Published Courses</h5>
+                    <p class="card-text display-6">
+                        {{ courses.items|selectattr('is_published')|list|length }}
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Total Enrollments</h5>
+                    <p class="card-text display-6">
+                        {{ courses.items|map(attribute='enrollments')|map('length')|sum }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

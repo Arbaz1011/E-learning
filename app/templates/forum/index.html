@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Discussion Forum</h1>
+        {% if current_user.is_authenticated %}
+            <a href="{{ url_for('courses.my_courses') }}" class="btn btn-primary">
+                My Courses Discussions
+            </a>
+        {% endif %}
+    </div>
+
+    <!-- Topics List -->
+    <div class="card">
+        <div class="card-body">
+            {% if topics.items %}
+                <div class="list-group">
+                    {% for topic in topics.items %}
+                    <div class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between">
+                            <div>
+                                <h5 class="mb-1">
+                                    <a href="{{ url_for('forum.topic', topic_id=topic.id) }}" class="text-decoration-none">
+                                        {{ topic.title }}
+                                    </a>
+                                </h5>
+                                <p class="mb-1">
+                                    <small class="text-muted">
+                                        Course: <a href="{{ url_for('courses.view', course_id=topic.course.id) }}" class="text-decoration-none">
+                                            {{ topic.course.title }}
+                                        </a>
+                                    </small>
+                                </p>
+                            </div>
+                            <div class="text-end">
+                                <small class="text-muted d-block">
+                                    {{ topic.posts|length }} replies
+                                </small>
+                                <small class="text-muted">
+                                    Last post: 
+                                    {% if topic.posts %}
+                                        {{ topic.posts[-1].created_at.strftime('%Y-%m-%d %H:%M') }}
+                                    {% else %}
+                                        No replies yet
+                                    {% endif %}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Pagination -->
+                {% if topics.pages > 1 %}
+                <nav aria-label="Topic pagination" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        {% for page in range(1, topics.pages + 1) %}
+                        <li class="page-item {% if page == topics.page %}active{% endif %}">
+                            <a class="page-link" href="{{ url_for('forum.index', page=page) }}">{{ page }}</a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </nav>
+                {% endif %}
+            {% else %}
+                <div class="text-center py-4">
+                    <h5>No discussions yet</h5>
+                    <p class="text-muted mb-0">
+                        Be the first to start a discussion in one of your courses!
+                    </p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Forum Guidelines -->
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5 class="mb-0">Forum Guidelines</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <h6>Be Respectful</h6>
+                    <p class="text-muted">Treat others with respect and maintain a professional tone in discussions.</p>
+                </div>
+                <div class="col-md-4">
+                    <h6>Stay On Topic</h6>
+                    <p class="text-muted">Keep discussions relevant to the course material and learning objectives.</p>
+                </div>
+                <div class="col-md-4">
+                    <h6>Help Others</h6>
+                    <p class="text-muted">Share your knowledge and experiences to help fellow learners succeed.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

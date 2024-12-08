@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <!-- Course Header -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-1">{{ course.title }} - Discussions</h1>
+                    <p class="mb-0">
+                        <small class="text-muted">
+                            Instructor: {{ course.instructor.username }}
+                        </small>
+                    </p>
+                </div>
+                <div>
+                    <a href="{{ url_for('courses.view', course_id=course.id) }}" class="btn btn-secondary me-2">
+                        Back to Course
+                    </a>
+                    <a href="{{ url_for('forum.new_topic', course_id=course.id) }}" class="btn btn-primary">
+                        New Topic
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Topics List -->
+    <div class="card">
+        <div class="card-body">
+            {% if topics.items %}
+                <div class="list-group">
+                    {% for topic in topics.items %}
+                    <div class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between">
+                            <div>
+                                <h5 class="mb-1">
+                                    <a href="{{ url_for('forum.topic', topic_id=topic.id) }}" class="text-decoration-none">
+                                        {{ topic.title }}
+                                    </a>
+                                </h5>
+                                <p class="mb-1">
+                                    <small class="text-muted">
+                                        Started by {{ topic.posts[0].author.username if topic.posts else 'Unknown' }}
+                                        on {{ topic.created_at.strftime('%Y-%m-%d') }}
+                                    </small>
+                                </p>
+                            </div>
+                            <div class="text-end">
+                                <small class="text-muted d-block">
+                                    {{ topic.posts|length - 1 }} replies
+                                </small>
+                                <small class="text-muted">
+                                    Last post: 
+                                    {% if topic.posts|length > 1 %}
+                                        {{ topic.posts[-1].created_at.strftime('%Y-%m-%d %H:%M') }}
+                                    {% else %}
+                                        No replies yet
+                                    {% endif %}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Pagination -->
+                {% if topics.pages > 1 %}
+                <nav aria-label="Topic pagination" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        {% for page in range(1, topics.pages + 1) %}
+                        <li class="page-item {% if page == topics.page %}active{% endif %}">
+                            <a class="page-link" href="{{ url_for('forum.course_topics', course_id=course.id, page=page) }}">
+                                {{ page }}
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </nav>
+                {% endif %}
+            {% else %}
+                <div class="text-center py-4">
+                    <h5>No discussions yet</h5>
+                    <p class="text-muted mb-3">Be the first to start a discussion in this course!</p>
+                    <a href="{{ url_for('forum.new_topic', course_id=course.id) }}" class="btn btn-primary">
+                        Start New Topic
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Discussion Guidelines -->
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5 class="mb-0">Course Discussion Guidelines</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <h6>Stay On Topic</h6>
+                    <p class="text-muted">Keep discussions relevant to the course material and learning objectives.</p>
+                </div>
+                <div class="col-md-4">
+                    <h6>Be Collaborative</h6>
+                    <p class="text-muted">Share your insights and experiences to help fellow learners succeed.</p>
+                </div>
+                <div class="col-md-4">
+                    <h6>Be Respectful</h6>
+                    <p class="text-muted">Maintain a professional and supportive environment for everyone.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

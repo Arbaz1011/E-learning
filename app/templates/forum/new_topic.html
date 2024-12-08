@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h1 class="h4 mb-0">New Discussion Topic</h1>
+                        <a href="{{ url_for('forum.course_topics', course_id=course.id) }}" class="btn btn-secondary">
+                            Back to Discussions
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+                        <div class="mb-3">
+                            <p class="text-muted">Course: {{ course.title }}</p>
+                        </div>
+                        <div class="mb-3">
+                            {{ form.title.label(class="form-label") }}
+                            {{ form.title(class="form-control") }}
+                            {% for error in form.title.errors %}
+                                <span class="text-danger">{{ error }}</span>
+                            {% endfor %}
+                            <div class="form-text">Choose a clear and descriptive title for your discussion.</div>
+                        </div>
+                        <div class="mb-3">
+                            {{ form.content.label(class="form-label") }}
+                            {{ form.content(class="form-control", rows=10) }}
+                            {% for error in form.content.errors %}
+                                <span class="text-danger">{{ error }}</span>
+                            {% endfor %}
+                            <div class="form-text">
+                                Provide details about your topic. You can use markdown for formatting.
+                            </div>
+                        </div>
+                        {{ form.submit(class="btn btn-primary") }}
+                    </form>
+                </div>
+            </div>
+
+            <!-- Discussion Guidelines -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Discussion Guidelines</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="mb-0">
+                        <li class="mb-2">Keep your topic relevant to the course material.</li>
+                        <li class="mb-2">Be clear and specific in your questions or discussion points.</li>
+                        <li class="mb-2">Check if a similar topic already exists before creating a new one.</li>
+                        <li>Be respectful and professional in your communication.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

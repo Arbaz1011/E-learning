@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>My Notes</h1>
+        <a href="{{ url_for('notes.new_note') }}" class="btn btn-primary">New Note</a>
+    </div>
+
+    {% if notes %}
+        <div class="row">
+            {% for note in notes %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ note.title }}</h5>
+                        <p class="card-text">{{ note.content[:200] }}{% if note.content|length > 200 %}...{% endif %}</p>
+                        <p class="text-muted small">Last updated: {{ note.updated_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <a href="{{ url_for('notes.edit_note', id=note.id) }}" class="btn btn-sm btn-outline-primary">Edit</a>
+                        <form action="{{ url_for('notes.delete_note', id=note.id) }}" method="POST" class="d-inline">
+                            {{ form.hidden_tag() if form }}
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to delete this note?')">Delete</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            You haven't created any notes yet. Click the "New Note" button to get started!
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
