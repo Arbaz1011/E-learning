@@ -1,4 +1,4 @@
-from flask import render_template, redirect, url_for, flash, request
+from flask import abort, render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
 from app import db
 from app.forum import bp
@@ -113,3 +113,15 @@ def delete_post(post_id):
     db.session.commit()
     flash('Your post has been deleted!', 'success')
     return redirect(url_for('forum.topic', topic_id=topic_id))
+
+# Lazy import
+def load_forum_models():
+    from app.models import ForumTopic, ForumPost, Course
+    return ForumTopic, ForumPost, Course
+
+@login_required
+def show_forum():
+    ForumTopic, ForumPost, Course = load_forum_models()
+    # Logic to show forum topics and posts
+    topics = ForumTopic.query.all()
+    return render_template('forum.html', topics=topics)

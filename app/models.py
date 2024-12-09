@@ -10,6 +10,14 @@ from werkzeug.security import generate_password_hash, check_password_hash
 def load_user(id):
     return User.query.get(int(id))
 
+class ForumTopic(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.String(500), nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def __repr__(self):
+        return f'<ForumTopic {self.title}>'
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), unique=True, nullable=False)
@@ -102,7 +110,3 @@ class Note(db.Model):
     # Relationships
     user = db.relationship('User', back_populates='notes')
 
-# Move ForumTopic import inside the function or method where needed to avoid circular import
-def load_forum_topic():
-    from app.models import ForumTopic  # Import here instead of globally
-    # Use ForumTopic as needed
