@@ -18,6 +18,21 @@ class ForumTopic(db.Model):
 
     def __repr__(self):
         return f'<ForumTopic {self.title}>'
+    
+class ForumPost(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    content = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    forum_topic_id = db.Column(db.Integer, db.ForeignKey('forum_topic.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    
+    # Relationships
+    forum_topic = db.relationship('ForumTopic', backref=db.backref('posts', lazy=True))
+    user = db.relationship('User', backref=db.backref('posts', lazy=True))
+
+    def __repr__(self):
+        return f'<ForumPost {self.id} by {self.user.username}>'
+
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), unique=True, nullable=False)
