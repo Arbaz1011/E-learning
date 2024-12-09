@@ -2,9 +2,9 @@ from datetime import datetime
 from app import db, login_manager
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
-from app import db
-from app.models import ForumTopic
 
+# Remove the problematic import here
+# from app.models import ForumTopic  # This import is causing the circular import
 
 @login_manager.user_loader
 def load_user(id):
@@ -101,14 +101,8 @@ class Note(db.Model):
     
     # Relationships
     user = db.relationship('User', back_populates='notes')
-    
-from app import db  # Import db from your app
 
-class ForumTopic(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(100), nullable=False)
-    description = db.Column(db.String(500), nullable=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
-    def __repr__(self):
-        return f'<ForumTopic {self.title}>'
+# Move ForumTopic import inside the function or method where needed to avoid circular import
+def load_forum_topic():
+    from app.models import ForumTopic  # Import here instead of globally
+    # Use ForumTopic as needed
