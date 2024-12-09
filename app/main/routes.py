@@ -23,3 +23,6 @@ def about():
 @bp.route('/contact')
 def contact():
     return render_template('main/contact.html', title='Contact Us')
+
+def some_function():
+    from app.models import ForumTopic  # Import locally inside the function
